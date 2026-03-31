@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ProjectManagment.Models;
@@ -20,7 +21,7 @@ public class EventsController : ControllerBase
     {
         return await _context.Events.ToListAsync();
     }
-
+    [Authorize(Roles = "Admin")]
     [HttpPost]
     public async Task<ActionResult<Event>> PostEvent(Event newEvent)
     {
