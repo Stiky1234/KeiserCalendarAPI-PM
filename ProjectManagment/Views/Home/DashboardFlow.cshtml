@@ -1,0 +1,624 @@
+@model ProjectManagment.ViewModels.HomeDashboardViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Dashboard";
+    var eventsJson = JsonSerializer.Serialize(Model.Events);
+}
+
+<div class="app-shell">
+    <header class="topbar topbar--compact">
+        <a class="brand-mark" href="/">
+            <img src="~/images/ding-calendar-logo.png" alt="Ding! Your Calendar logo" />
+            <span>
+                <strong>Ding!</strong>
+                <em>Your Calendar</em>
+            </span>
+        </a>
+
+        <div class="company-badge">@Model.OrganizationName</div>
+    </header>
+
+    <main class="page-stack">
+        <section id="authStage" class="surface-card auth-stage">
+            <div id="roleSelection" class="stage-panel stage-panel--active">
+                <div class="stage-copy">
+                    <span class="eyebrow">Step 1</span>
+                    <h1>Select how you want to sign in.</h1>
+                    <p>Choose Admin or User first. The app will then show the correct login form and, after sign-in, the matching dashboard.</p>
+                </div>
+
+                <div class="role-grid">
+                    <button type="button" class="role-card" data-role-choice="admin">
+                        <img src="~/images/ding-calendar-logo.png" alt="" />
+                        <strong>Admin</strong>
+                        <span>Manage events, update schedules, and remove outdated items.</span>
+                    </button>
+
+                    <button type="button" class="role-card" data-role-choice="user">
+                        <img src="~/images/ding-calendar-logo.png" alt="" />
+                        <strong>User</strong>
+                        <span>Browse upcoming events, open event pages, and view the calendar.</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="adminLogin" class="stage-panel">
+                <div class="login-layout">
+                    <div class="stage-copy">
+                        <span class="eyebrow">Admin login</span>
+                        <h2>Sign in as an administrator.</h2>
+                        <p class="company-name">@Model.OrganizationName</p>
+                        <p>Use the company or university credentials for event administration.</p>
+                    </div>
+
+                    <form class="auth-form auth-form--boxed" data-login-form="admin">
+                        <label for="adminEmail">Email</label>
+                        <input id="adminEmail" type="email" placeholder="admin@company.edu" required />
+
+                        <label for="adminPassword">Password</label>
+                        <input id="adminPassword" type="password" placeholder="Enter your password" required />
+
+                        <div class="action-row">
+                            <button type="submit" class="primary-button">Login</button>
+                            <button type="button" class="ghost-button" data-back-to-role>Select another role</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div id="userLogin" class="stage-panel">
+                <div class="login-layout">
+                    <div class="stage-copy">
+                        <span class="eyebrow">User login</span>
+                        <h2>Sign in as a user.</h2>
+                        <p class="company-name">@Model.OrganizationName</p>
+                        <p>Use your company or university email and password to view upcoming events and the calendar.</p>
+                    </div>
+
+                    <form class="auth-form auth-form--boxed" data-login-form="user">
+                        <label for="userEmail">Email</label>
+                        <input id="userEmail" type="email" placeholder="student@university.edu" required />
+
+                        <label for="userPassword">Password</label>
+                        <input id="userPassword" type="password" placeholder="Enter your password" required />
+
+                        <div class="action-row">
+                            <button type="submit" class="primary-button">Login</button>
+                            <button type="button" class="ghost-button" data-back-to-role>Select another role</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="adminDashboard" class="dashboard-panel dashboard-panel--hidden">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">Admin Dashboard</span>
+                    <h2>Event administration</h2>
+                </div>
+                <div class="section-tools">
+                    <p>Signed in as <strong id="adminUserName">Admin User</strong></p>
+                    <button type="button" class="ghost-button" id="adminLogout">Logout</button>
+                </div>
+            </div>
+
+            <div class="admin-grid">
+                <article class="surface-card admin-form-card">
+                    <div class="card-header">
+                        <h3>Create or edit an event</h3>
+                        <span class="status-pill">Admin only</span>
+                    </div>
+
+                    <form class="event-form" id="adminEventForm">
+                        <input id="eventId" type="hidden" />
+
+                        <label for="eventName">Event name</label>
+                        <input id="eventName" type="text" placeholder="Innovation Kickoff" required />
+
+                        <label for="eventDescription">Description</label>
+                        <textarea id="eventDescription" rows="4" placeholder="Write the event summary, speakers, and call to action." required></textarea>
+
+                        <div class="form-row two-columns">
+                            <div>
+                                <label for="eventPlace">Place</label>
+                                <input id="eventPlace" type="text" placeholder="Atrium Hall" required />
+                            </div>
+                            <div>
+                                <label for="eventHour">Start time</label>
+                                <input id="eventHour" type="time" value="09:00" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div>
+                                <label for="eventEndHour">End time</label>
+                                <input id="eventEndHour" type="time" value="11:00" required />
+                            </div>
+                            <div>
+                                <label for="eventDate">Date</label>
+                                <input id="eventDate" type="date" value="2026-04-08" required />
+                            </div>
+                        </div>
+
+                        <div class="form-row two-columns">
+                            <div>
+                                <label for="eventCategory">Category</label>
+                                <select id="eventCategory">
+                                    <option>Featured</option>
+                                    <option>Academic</option>
+                                    <option>Career</option>
+                                    <option>Social</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="eventAudience">Audience</label>
+                                <input id="eventAudience" type="text" placeholder="All campuses" required />
+                            </div>
+                        </div>
+
+                        <div class="action-row">
+                            <button type="submit" class="primary-button" id="saveEventButton">Create event</button>
+                            <button type="button" class="secondary-button" id="clearEventButton">Clear form</button>
+                            <button type="button" class="ghost-button danger-button" id="deleteEventButton" disabled>Delete selected event</button>
+                        </div>
+                    </form>
+                </article>
+
+                <article class="surface-card admin-list-card">
+                    <div class="card-header">
+                        <h3>Current event list</h3>
+                        <span class="status-pill neutral" id="adminEventCount">0 events</span>
+                    </div>
+
+                    <div class="admin-event-list" id="adminEventList"></div>
+                </article>
+            </div>
+        </section>
+
+        <section id="userDashboard" class="dashboard-panel dashboard-panel--hidden">
+            <div class="section-heading">
+                <div>
+                    <span class="eyebrow">User Dashboard</span>
+                    <h2>Events and calendar</h2>
+                </div>
+                <div class="section-tools">
+                    <p>Signed in as <strong id="userDisplayName">User</strong></p>
+                    <button type="button" class="ghost-button" id="userLogout">Logout</button>
+                </div>
+            </div>
+
+            <div class="user-dashboard-shell">
+                <aside class="surface-card user-sidebar">
+                    <div class="sidebar-brand">
+                        <img src="~/images/ding-calendar-logo.png" alt="" />
+                        <div>
+                            <strong>@Model.OrganizationName</strong>
+                            <span id="userSidebarName">Signed-in user portal</span>
+                        </div>
+                    </div>
+
+                    <button type="button" class="tab-link is-active" data-tab-target="tab-home">Home</button>
+                    <button type="button" class="tab-link" data-tab-target="tab-calendar">Calendar</button>
+                </aside>
+
+                <div class="user-dashboard-content">
+                    <section id="tab-home" class="surface-card tab-panel is-active">
+                        <div class="card-header">
+                            <h3>Upcoming events</h3>
+                            <span class="status-pill">Home tab</span>
+                        </div>
+
+                        <div class="upcoming-grid" id="userUpcomingGrid"></div>
+                    </section>
+
+                    <section id="tab-calendar" class="surface-card tab-panel">
+                        <div class="card-header">
+                            <h3>Calendar</h3>
+                            <span class="status-pill neutral">Event days highlighted</span>
+                        </div>
+
+                        <div class="calendar-shell">
+                            <div class="calendar-month">
+                                <strong>April 2026</strong>
+                                <span>Select an event from Home to open its details page in a new tab.</span>
+                            </div>
+
+                            <div class="calendar-grid" id="calendarGrid"></div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+@section Scripts {
+    <script>
+        (() => {
+            const organizationName = @Html.Raw(JsonSerializer.Serialize(Model.OrganizationName));
+            const initialEvents = @Html.Raw(eventsJson);
+            const storageKeys = {
+                events: "ding-calendar-events",
+                session: "ding-calendar-session"
+            };
+
+            const roleSelection = document.getElementById("roleSelection");
+            const adminLogin = document.getElementById("adminLogin");
+            const userLogin = document.getElementById("userLogin");
+            const authStage = document.getElementById("authStage");
+            const adminDashboard = document.getElementById("adminDashboard");
+            const userDashboard = document.getElementById("userDashboard");
+            const stagePanels = [roleSelection, adminLogin, userLogin];
+            const dashboardPanels = [adminDashboard, userDashboard];
+            const roleButtons = document.querySelectorAll("[data-role-choice]");
+            const backButtons = document.querySelectorAll("[data-back-to-role]");
+            const loginForms = document.querySelectorAll("[data-login-form]");
+            const tabLinks = document.querySelectorAll("[data-tab-target]");
+            const tabPanels = document.querySelectorAll(".tab-panel");
+
+            const adminUserName = document.getElementById("adminUserName");
+            const userDisplayName = document.getElementById("userDisplayName");
+            const userSidebarName = document.getElementById("userSidebarName");
+            const adminLogout = document.getElementById("adminLogout");
+            const userLogout = document.getElementById("userLogout");
+
+            const adminEventForm = document.getElementById("adminEventForm");
+            const eventId = document.getElementById("eventId");
+            const eventName = document.getElementById("eventName");
+            const eventDescription = document.getElementById("eventDescription");
+            const eventPlace = document.getElementById("eventPlace");
+            const eventHour = document.getElementById("eventHour");
+            const eventEndHour = document.getElementById("eventEndHour");
+            const eventDate = document.getElementById("eventDate");
+            const eventCategory = document.getElementById("eventCategory");
+            const eventAudience = document.getElementById("eventAudience");
+            const saveEventButton = document.getElementById("saveEventButton");
+            const clearEventButton = document.getElementById("clearEventButton");
+            const deleteEventButton = document.getElementById("deleteEventButton");
+            const adminEventList = document.getElementById("adminEventList");
+            const adminEventCount = document.getElementById("adminEventCount");
+            const userUpcomingGrid = document.getElementById("userUpcomingGrid");
+            const calendarGrid = document.getElementById("calendarGrid");
+
+            let events = loadEvents();
+            let session = loadSession();
+            let selectedEventId = null;
+
+            function normalizeEvent(rawEvent) {
+                return {
+                    id: Number(rawEvent.id ?? rawEvent.Id ?? Date.now()),
+                    title: rawEvent.title ?? rawEvent.Title ?? "",
+                    description: rawEvent.description ?? rawEvent.Description ?? "",
+                    location: rawEvent.location ?? rawEvent.Location ?? "",
+                    category: rawEvent.category ?? rawEvent.Category ?? "General",
+                    audience: rawEvent.audience ?? rawEvent.Audience ?? "",
+                    eventDate: (rawEvent.eventDate ?? rawEvent.EventDate ?? "").toString().slice(0, 10),
+                    startTime: (rawEvent.startTime ?? rawEvent.StartTime ?? "").toString().slice(0, 5),
+                    endTime: (rawEvent.endTime ?? rawEvent.EndTime ?? "").toString().slice(0, 5),
+                    featured: Boolean(rawEvent.featured ?? rawEvent.Featured ?? false)
+                };
+            }
+
+            function loadEvents() {
+                const stored = localStorage.getItem(storageKeys.events);
+                if (!stored) {
+                    return initialEvents.map(normalizeEvent);
+                }
+
+                try {
+                    return JSON.parse(stored).map(normalizeEvent);
+                } catch {
+                    return initialEvents.map(normalizeEvent);
+                }
+            }
+
+            function persistEvents() {
+                localStorage.setItem(storageKeys.events, JSON.stringify(events));
+            }
+
+            function loadSession() {
+                const stored = localStorage.getItem(storageKeys.session);
+                if (!stored) {
+                    return null;
+                }
+
+                try {
+                    return JSON.parse(stored);
+                } catch {
+                    return null;
+                }
+            }
+
+            function persistSession(nextSession) {
+                session = nextSession;
+                if (nextSession) {
+                    localStorage.setItem(storageKeys.session, JSON.stringify(nextSession));
+                } else {
+                    localStorage.removeItem(storageKeys.session);
+                }
+            }
+
+            function deriveName(email) {
+                const localPart = (email || "").split('@@')[0];
+                return localPart
+                    .split(/[._-]+/)
+                    .filter(Boolean)
+                    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+                    .join(" ") || "User";
+            }
+
+            function showStage(panel) {
+                authStage.classList.remove("auth-stage--hidden");
+                stagePanels.forEach((item) => item.classList.toggle("stage-panel--active", item === panel));
+                dashboardPanels.forEach((item) => item.classList.add("dashboard-panel--hidden"));
+            }
+
+            function updateSignedInLabels() {
+                const displayName = session?.name || "User";
+                adminUserName.textContent = displayName;
+                userDisplayName.textContent = displayName;
+                userSidebarName.textContent = `${displayName} - ${organizationName}`;
+            }
+
+            function showDashboard(role) {
+                authStage.classList.add("auth-stage--hidden");
+                updateSignedInLabels();
+                dashboardPanels.forEach((item) => item.classList.add("dashboard-panel--hidden"));
+
+                if (role === "admin") {
+                    adminDashboard.classList.remove("dashboard-panel--hidden");
+                    window.scrollTo({ top: adminDashboard.offsetTop - 18, behavior: "smooth" });
+                } else {
+                    userDashboard.classList.remove("dashboard-panel--hidden");
+                    window.scrollTo({ top: userDashboard.offsetTop - 18, behavior: "smooth" });
+                }
+            }
+
+            function logout() {
+                persistSession(null);
+                showStage(roleSelection);
+            }
+
+            function formatTimeRange(calendarEvent) {
+                return `${calendarEvent.startTime.slice(0, 5)} - ${calendarEvent.endTime.slice(0, 5)}`;
+            }
+
+            function formatDateLabel(calendarEvent) {
+                return new Date(calendarEvent.eventDate).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "2-digit"
+                });
+            }
+
+            function resetEventForm() {
+                adminEventForm.reset();
+                eventId.value = "";
+                selectedEventId = null;
+                saveEventButton.textContent = "Create event";
+                deleteEventButton.disabled = true;
+                eventHour.value = "09:00";
+                eventEndHour.value = "11:00";
+                eventDate.value = "2026-04-08";
+                eventCategory.value = "Featured";
+            }
+
+            function populateEventForm(calendarEvent) {
+                selectedEventId = calendarEvent.id;
+                eventId.value = calendarEvent.id;
+                eventName.value = calendarEvent.title;
+                eventDescription.value = calendarEvent.description;
+                eventPlace.value = calendarEvent.location;
+                eventHour.value = calendarEvent.startTime.slice(0, 5);
+                eventEndHour.value = calendarEvent.endTime.slice(0, 5);
+                eventDate.value = calendarEvent.eventDate.slice(0, 10);
+                eventCategory.value = calendarEvent.category;
+                eventAudience.value = calendarEvent.audience;
+                saveEventButton.textContent = "Save event";
+                deleteEventButton.disabled = false;
+            }
+
+            function buildEventPayload() {
+                return {
+                    id: eventId.value ? Number(eventId.value) : Date.now(),
+                    title: eventName.value.trim(),
+                    description: eventDescription.value.trim(),
+                    location: eventPlace.value.trim(),
+                    category: eventCategory.value,
+                    audience: eventAudience.value.trim(),
+                    eventDate: eventDate.value,
+                    startTime: eventHour.value,
+                    endTime: eventEndHour.value,
+                    featured: eventCategory.value === "Featured"
+                };
+            }
+
+            function renderAdminEvents() {
+                adminEventList.innerHTML = "";
+                adminEventCount.textContent = `${events.length} events`;
+
+                const sortedEvents = [...events].sort((a, b) =>
+                    `${a.eventDate}T${a.startTime}`.localeCompare(`${b.eventDate}T${b.startTime}`));
+
+                sortedEvents.forEach((calendarEvent) => {
+                    const item = document.createElement("div");
+                    item.className = `admin-event-item${selectedEventId === calendarEvent.id ? " admin-event-item--selected" : ""}`;
+                    item.innerHTML = `
+                        <div>
+                            <strong>${calendarEvent.title}</strong>
+                            <span>${formatDateLabel(calendarEvent)} - ${formatTimeRange(calendarEvent)}</span>
+                            <small>${calendarEvent.location}</small>
+                        </div>
+                        <div class="mini-actions">
+                            <button type="button" class="mini-button" data-edit-event="${calendarEvent.id}">Edit</button>
+                            <button type="button" class="mini-button ghost" data-delete-event="${calendarEvent.id}">Delete</button>
+                        </div>
+                    `;
+                    adminEventList.appendChild(item);
+                });
+
+                adminEventList.querySelectorAll("[data-edit-event]").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        const calendarEvent = events.find((item) => item.id === Number(button.dataset.editEvent));
+                        if (calendarEvent) {
+                            populateEventForm(calendarEvent);
+                            renderAdminEvents();
+                        }
+                    });
+                });
+
+                adminEventList.querySelectorAll("[data-delete-event]").forEach((button) => {
+                    button.addEventListener("click", () => {
+                        const id = Number(button.dataset.deleteEvent);
+                        events = events.filter((item) => item.id !== id);
+                        if (selectedEventId === id) {
+                            resetEventForm();
+                        }
+                        persistEvents();
+                        renderAllEventViews();
+                    });
+                });
+            }
+
+            function renderUserEvents() {
+                userUpcomingGrid.innerHTML = "";
+
+                const sortedEvents = [...events].sort((a, b) =>
+                    `${a.eventDate}T${a.startTime}`.localeCompare(`${b.eventDate}T${b.startTime}`));
+
+                sortedEvents.forEach((calendarEvent) => {
+                    const detailsUrl = new URL("/Home/EventDetails", window.location.origin);
+                    detailsUrl.searchParams.set("id", String(calendarEvent.id));
+                    detailsUrl.searchParams.set("title", calendarEvent.title);
+                    detailsUrl.searchParams.set("location", calendarEvent.location);
+                    detailsUrl.searchParams.set("time", formatTimeRange(calendarEvent));
+                    detailsUrl.searchParams.set("description", calendarEvent.description);
+                    detailsUrl.searchParams.set("category", calendarEvent.category);
+
+                    const link = document.createElement("a");
+                    link.className = `event-preview${calendarEvent.featured ? " featured-card" : ""}`;
+                    link.href = detailsUrl.toString();
+                    link.target = "_blank";
+                    link.rel = "noopener noreferrer";
+                    link.innerHTML = `
+                        <span class="preview-tag">${calendarEvent.category}</span>
+                        <strong>${calendarEvent.title}</strong>
+                        <span>${formatDateLabel(calendarEvent)} - ${calendarEvent.startTime.slice(0, 5)}</span>
+                        <small>${calendarEvent.location}</small>
+                    `;
+                    userUpcomingGrid.appendChild(link);
+                });
+            }
+
+            function renderCalendar() {
+                calendarGrid.innerHTML = "";
+
+                for (let day = 1; day <= 30; day += 1) {
+                    const hasEvent = events.some((item) => {
+                        const date = new Date(item.eventDate);
+                        return date.getMonth() === 3 && date.getDate() === day;
+                    });
+
+                    const dayCard = document.createElement("div");
+                    dayCard.className = `calendar-day${hasEvent ? " has-event" : ""}`;
+                    dayCard.innerHTML = `<span>${day}</span>${hasEvent ? "<small>Event</small>" : ""}`;
+                    calendarGrid.appendChild(dayCard);
+                }
+            }
+
+            function renderAllEventViews() {
+                renderAdminEvents();
+                renderUserEvents();
+                renderCalendar();
+            }
+
+            roleButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const selectedRole = button.dataset.roleChoice;
+                    showStage(selectedRole === "admin" ? adminLogin : userLogin);
+                });
+            });
+
+            backButtons.forEach((button) => {
+                button.addEventListener("click", () => showStage(roleSelection));
+            });
+
+            adminLogout.addEventListener("click", logout);
+            userLogout.addEventListener("click", logout);
+
+            loginForms.forEach((form) => {
+                form.addEventListener("submit", (event) => {
+                    event.preventDefault();
+                    const emailInput = form.querySelector("input[type='email']");
+                    const passwordInput = form.querySelector("input[type='password']");
+
+                    if (!emailInput.value.trim() || !passwordInput.value.trim()) {
+                        return;
+                    }
+
+                    const role = form.dataset.loginForm;
+                    persistSession({
+                        role,
+                        email: emailInput.value.trim(),
+                        name: deriveName(emailInput.value.trim())
+                    });
+
+                    showDashboard(role);
+                });
+            });
+
+            tabLinks.forEach((link) => {
+                link.addEventListener("click", () => {
+                    const targetId = link.dataset.tabTarget;
+                    tabPanels.forEach((panel) => panel.classList.toggle("is-active", panel.id === targetId));
+                    tabLinks.forEach((button) => button.classList.toggle("is-active", button === link));
+                });
+            });
+
+            adminEventForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+
+                if (!adminEventForm.reportValidity()) {
+                    return;
+                }
+
+                const payload = buildEventPayload();
+                const existingIndex = events.findIndex((item) => item.id === payload.id);
+
+                if (existingIndex >= 0) {
+                    events[existingIndex] = payload;
+                } else {
+                    events.push(payload);
+                }
+
+                persistEvents();
+                resetEventForm();
+                renderAllEventViews();
+            });
+
+            clearEventButton.addEventListener("click", resetEventForm);
+
+            deleteEventButton.addEventListener("click", () => {
+                if (!selectedEventId) {
+                    return;
+                }
+
+                events = events.filter((item) => item.id !== selectedEventId);
+                persistEvents();
+                resetEventForm();
+                renderAllEventViews();
+            });
+
+            renderAllEventViews();
+            resetEventForm();
+
+            if (session?.role === "admin" || session?.role === "user") {
+                showDashboard(session.role);
+            } else {
+                showStage(roleSelection);
+            }
+        })();
+    </script>
+}
+
+

@@ -1,0 +1,60 @@
+@model ProjectManagment.ViewModels.EventDetailsViewModel
+@{
+    ViewData["Title"] = "Event Details";
+    var query = Context.Request.Query;
+    var eventTitle = string.IsNullOrWhiteSpace(query["title"]) ? Model.Event.Title : query["title"].ToString();
+    var eventLocation = string.IsNullOrWhiteSpace(query["location"]) ? Model.Event.Location : query["location"].ToString();
+    var eventTime = string.IsNullOrWhiteSpace(query["time"]) ? $"{Model.Event.StartTime:hh\\:mm} - {Model.Event.EndTime:hh\\:mm}" : query["time"].ToString();
+    var eventDescription = string.IsNullOrWhiteSpace(query["description"]) ? Model.Event.Description : query["description"].ToString();
+    var eventCategory = string.IsNullOrWhiteSpace(query["category"]) ? Model.Event.Category : query["category"].ToString();
+}
+
+<div class="app-shell app-shell--narrow">
+    <header class="topbar topbar--compact">
+        <a class="brand-mark" href="@Url.Action("Index", "Home")">
+            <img src="~/images/ding-calendar-logo.png" alt="Ding! Your Calendar logo" />
+            <span>
+                <strong>Ding!</strong>
+                <em>Your Calendar</em>
+            </span>
+        </a>
+
+        <a class="ghost-button ghost-link" href="@Url.Action("Index", "Home")">Back to Dashboard</a>
+    </header>
+
+    <section class="surface-card detail-page">
+        <div class="section-heading">
+            <div>
+                <span class="eyebrow">Event page</span>
+                <h2>@eventTitle</h2>
+            </div>
+            <p>@Model.OrganizationName</p>
+        </div>
+
+        <div class="detail-page__grid">
+            <div class="detail-copy">
+                <span class="preview-tag">@eventCategory</span>
+                <p>@eventDescription</p>
+            </div>
+
+            <div class="detail-meta">
+                <div>
+                    <span>Name</span>
+                    <strong>@eventTitle</strong>
+                </div>
+                <div>
+                    <span>Location</span>
+                    <strong>@eventLocation</strong>
+                </div>
+                <div>
+                    <span>Time</span>
+                    <strong>@eventTime</strong>
+                </div>
+                <div>
+                    <span>Description</span>
+                    <strong>@eventDescription</strong>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
